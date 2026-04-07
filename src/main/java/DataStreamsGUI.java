@@ -6,13 +6,50 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+/**
+ * DataStreamsGUI is a Swing-based GUI application for
+ * loading text files and searching for specific strings
+ * using Java Streams. It displays the original file on the left
+ * and filtered search results on the right.
+ * <p>
+ * Features include:
+ * <ul>
+ *     <li>Loading a text file via JFileChooser</li>
+ *     <li>Searching for a string using Java Streams and lambda expressions</li>
+ *     <li>Displaying original and filtered content in separate text areas</li>
+ *     <li>Simple Quit button to exit the application</li>
+ * </ul>
+ *
+ * @Van Diep
+ * @version Spring 2022
+ */
 public class DataStreamsGUI extends JFrame {
 
+    /** Text area to display the contents of the loaded file. */
     private JTextArea originalTextArea;
+
+    /** Text area to display the filtered search results. */
     private JTextArea filteredTextArea;
+
+    /** Text field where the user enters the search string. */
     private JTextField searchField;
-    private JButton loadButton, searchButton, quitButton;
-    private String filePath; // stores the loaded file path
+
+    /** Button to load a text file. */
+    private JButton loadButton;
+
+    /** Button to perform search on the loaded file. */
+    private JButton searchButton;
+
+    /** Button to quit the application. */
+    private JButton quitButton;
+
+    /** Stores the file path of the loaded file. */
+    private String filePath;
+
+    /**
+     * Constructs the DataStreamsGUI frame with all components:
+     * text areas, buttons, and layout.
+     */
 
     public DataStreamsGUI() {
         super("Java Data Streams Lab 09");
@@ -53,6 +90,14 @@ public class DataStreamsGUI extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Handles loading a text file using JFileChooser.
+     * Reads the file line by line using Java Streams and displays
+     * it in the original text area.
+     *
+     * @param e the ActionEvent triggered by clicking the Load File button
+     */
+
     private void loadFile(ActionEvent e) {
         JFileChooser chooser = new JFileChooser();
         int result = chooser.showOpenDialog(this);
@@ -60,6 +105,10 @@ public class DataStreamsGUI extends JFrame {
             filePath = chooser.getSelectedFile().getAbsolutePath();
             originalTextArea.setText("");
             filteredTextArea.setText("");
+
+            // DO NOT THROW THE IOEXCEPTION ON MAIN be sure to handle the errors with the usual
+            // try catch mechanism..
+
             try (Stream<String> lines = Files.lines(Paths.get(filePath))) {
                 lines.forEach(line -> originalTextArea.append(line + "\n"));
             } catch (IOException ex) {
@@ -67,6 +116,14 @@ public class DataStreamsGUI extends JFrame {
             }
         }
     }
+
+    /**
+     * Handles searching the loaded file for the string entered
+     * in the search field. Displays matching lines in the filtered
+     * text area using Java Streams and a lambda expression.
+     *
+     * @param e the ActionEvent triggered by clicking the Search button
+     */
 
     private void searchFile(ActionEvent e) {
         if (filePath == null || searchField.getText().isEmpty()) {
@@ -79,10 +136,25 @@ public class DataStreamsGUI extends JFrame {
         try (Stream<String> lines = Files.lines(Paths.get(filePath))) {
             lines.filter(line -> line.contains(searchText))
                     .forEach(line -> filteredTextArea.append(line + "\n"));
+
+
+            /*
+            Thought of adding this, but there was no requirement for this in the assignment.
+             */
+
+            //lines.filter(line -> line.toLowerCase().matches(".*\\b" +
+            //        searchText.toLowerCase() + "\\b.*"))
+
+
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Error reading file: " + ex.getMessage());
         }
     }
+
+    /**
+     * Launches the DataStreamsGUI application.
+     *
+     */
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(DataStreamsGUI::new);
