@@ -157,6 +157,9 @@ public class DataStreamsGUI extends JFrame {
      */
 
     public static void main(String[] args) {
+
+        //adding exception here would crash the program
+
         SwingUtilities.invokeLater(DataStreamsGUI::new);
     }
 }
